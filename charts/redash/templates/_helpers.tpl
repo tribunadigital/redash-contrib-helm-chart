@@ -50,14 +50,14 @@ Create a default fully qualified scheduler name.
 Create a default fully qualified postgresql name.
 */}}
 {{- define "redash.postgresql.fullname" -}}
-{{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
+{{ template "postgresql.v1.primary.fullname" .Subcharts.postgresql }}
 {{- end -}}
 
 {{/*
 Create a default fully qualified redis name.
 */}}
 {{- define "redash.redis.fullname" -}}
-{{- printf "%s-%s" .Release.Name "redis-master" | trunc 63 | trimSuffix "-" -}}
+{{ printf "%s-master" (include "common.names.fullname" .Subcharts.redis) }}
 {{- end -}}
 
 {{/*
@@ -91,7 +91,7 @@ Shared environment block used across each component.
 - name: REDASH_DATABASE_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{ .Release.Name }}-postgresql
+      name: {{ include "redash.fullname" . }}-postgresql
       key: password
 - name: REDASH_DATABASE_HOSTNAME
   value: {{ include "redash.postgresql.fullname" . }}
@@ -117,7 +117,7 @@ Shared environment block used across each component.
     {{- with .Values.redis.existingSecret }}
       name: {{ . }}
     {{- else }}
-      name: {{ .Release.Name }}-redis
+      name: {{ include "redash.fullname" . }}-redis
     {{- end }}
       key: redis-password
 - name: REDASH_REDIS_HOSTNAME

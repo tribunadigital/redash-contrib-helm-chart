@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ .Release.Name }}-migrations"
+  name: "{{ include "redash.fullname" . }}-migrations"
   labels:
     {{- include "redash.labels" . | nindent 4 }}
     app.kubernetes.io/component: migrations
@@ -14,7 +14,7 @@ spec:
   ttlSecondsAfterFinished: {{ .Values.migrations.ttlSecondsAfterFinished }}
   template:
     metadata:
-      name: "{{ .Release.Name }}"
+      name: "{{ include "redash.fullname" . }}"
       labels:
         {{- include "redash.selectorLabels" . | nindent 8 }}
         {{- with .Values.migrations.podLabels }}
